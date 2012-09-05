@@ -13,6 +13,6 @@ In order for Play to access the `AwsMirror` project, you need to `sbt publish-lo
     git clone git://github.com/mslinn/AwsMirror.git
     cd AwsMirror
     sbt publish-local
-    ln -s ~/.ivy2/local/com.micronautics/ /opt/play-2.0.3/repository/local/com.micronautics
+    ln -s ~/.ivy2/local/com.micronautics/ $PLAY_HOME/repository/local/com.micronautics
     git clone git://github.com/mslinn/AwsUpdate.git
     play
