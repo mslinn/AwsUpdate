@@ -1,11 +1,13 @@
 # AwsUpdate #
 
+Responds to a git post-receive hook installed in BitBucket or GitHub to notify a Heroku app that files were changed, and then updates an S3 bucket with the modified files. `AwsUpdate` runs under Play 2 and requires Java 7.
+
 This project was sponsored by [Micronautics Research Corporation](http://www.micronauticsresearch.com/)
 
 ## To Build ##
 
 This project uses code from the [AwsMirror](https://github.com/mslinn/AwsMirror/) project, 
-which provides a command-line program written in Scala and Java. `AwsMirror` requires Java 7, therefore `AwsUpdate` also requires Java 7.
+which provides a command-line program written in Scala and Java. `AwsMirror` requires Java 7, therefore `AwsUpdate` also requires Play 2 to run under Java 7.
 In order for Play to access the `AwsMirror` project, you need to `sbt publish-local`, then create a symlink from the locally published project to Play:
 
     git clone git://github.com/mslinn/AwsMirror.git
