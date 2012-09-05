@@ -1,6 +1,7 @@
 package com.micronautics.aws.bitBucket;
 
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.IOException;
@@ -13,10 +14,12 @@ public class JSON {
             return commit;
 
         ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
         JsonNode rootNode = null;
         try {
             rootNode = mapper.readValue(payload, JsonNode.class);
         } catch (IOException e) {
+        	System.err.println(e.getMessage());
             return commit;
         }
 
@@ -72,6 +75,7 @@ public class JSON {
         try {
             rootNode = mapper.readValue(payload, JsonNode.class);
         } catch (IOException e) {
+        	System.err.println(e.getMessage());
             return 0;
         }
 
