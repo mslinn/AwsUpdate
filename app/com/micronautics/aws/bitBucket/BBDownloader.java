@@ -18,7 +18,7 @@ public class BBDownloader implements Callable<File> {
         this.tmpDir = tmpDir;
         this.commit = commit;
         this.fileName = fileName;
-        bitBucket = new BitBucketOAuth();
+        bitBucket = new BitBucketOAuth(); // todo don't use OAuth
     }
 
     public File call() {
@@ -32,7 +32,7 @@ public class BBDownloader implements Callable<File> {
             } else
                 return null;
         } catch (Exception ex) {
-            System.err.println(ex.getMessage());
+            System.err.println(ex);
             return null;
         }
     }
