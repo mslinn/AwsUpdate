@@ -4,7 +4,7 @@ import play.api._
 import play.api.mvc._
 import java.io.File
 import scala.collection.JavaConversions._
-import com.micronautics.aws.bitBucket.BBDownloader
+import com.micronautics.aws.bitBucket.BBCopy
 
 object Application extends Controller {
   val tmpDir = new File(System.getProperty("java.io.tmpdir"))
@@ -26,9 +26,9 @@ object Application extends Controller {
   	            var result = commit.repoName + "\n"
   	            commit.filesToActions.keySet foreach { fileName =>
   	              result += fileName + ": " + commit.filesToActions.get(fileName) + "\n"
-                  new BBDownloader(tmpDir, commit, fileName).call() // todo use future
+                  new BBCopy(tmpDir, commit, fileName).call() // todo use future
   	            }
-	            Ok(views.html.index("Got commit from BitBucket repo :" + result))
+	            Ok(views.html.index("Got commit from BitBucket repo: " + result))
 	          }
 
 	        case _ =>
