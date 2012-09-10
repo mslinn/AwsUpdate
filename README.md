@@ -18,11 +18,13 @@ In order for Play to access the `AwsMirror` project, you need to `sbt publish-lo
 
 For Linux and Mac, create a symlink:
 
+    export PLAY_HOME ~/play-2.0.3
     ln -s ~/.ivy2/local/com.micronautics/ $PLAY_HOME/repository/local/com.micronautics
 
 For Windows (even Cygwin) you must use [Sysinternals](http://technet.microsoft.com/en-us/sysinternals/bb842062) `junction` command:
 
-    junction %PLAY_HOME%/repository/local/com.micronautics "%HOMEDRIVE%%HOMEPATH%/.ivy2/local/com.micronautics"
+    setx PLAY_HOME "C:\play-2.0.3"
+    junction "%PLAY_HOME%/repository/local/com.micronautics" "%HOMEDRIVE%%HOMEPATH%/.ivy2/local/com.micronautics"
 
 For all OSes, run `AwsUpdate` locally as follows:
 
