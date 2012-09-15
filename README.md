@@ -45,8 +45,7 @@ Define two environment variables to hold your AWS access key and your AWS secret
     source AwsCredentials.properties
     heroku config:add accessKey=$accessKey secretKey=$secretKey
 
-If you want to access a private repository on BitBucket, use basic auth credentials to
-define two more environment variables:
+If you want to access a private repository on BitBucket, define two more environment variables to hold basic authentication credentials:
 
     source BBCredentials.properties
     heroku config:add bbUserId=$userid bbPassword=$password
