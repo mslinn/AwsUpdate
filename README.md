@@ -52,6 +52,7 @@ define two more environment variables:
     heroku config:add bbUserId=$userid bbPassword=$password
 
 Check that the environment variables are properly set:
+
     heroku config
     === floating-meadow-2509 Config Vars
     accessKey:  asdfasdf
