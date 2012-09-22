@@ -1,16 +1,16 @@
 # AwsUpdate #
 
-Responds to a git post-receive hook installed in BitBucket or GitHub to notify a Heroku app that files were changed, 
+Responds to a git post-receive hook installed in BitBucket or GitHub to notify a Heroku app that files were changed,
 and then updates an S3 bucket with the modified files. `AwsUpdate` runs under Play 2 and requires Java 7.
 
 This project is sponsored by [Micronautics Research Corporation](http://www.micronauticsresearch.com/)
 
 ## To Build ##
 
-This project uses code from the [AwsMirror](https://github.com/mslinn/AwsMirror/) project, 
-which provides a command-line program written in Scala and Java. `AwsMirror` requires Java 7, therefore 
+This project uses code from the [AwsMirror](https://github.com/mslinn/AwsMirror/) project,
+which provides a command-line program written in Scala and Java. `AwsMirror` requires Java 7, therefore
 `AwsUpdate` also requires Play 2 to run under Java 7.
-In order for Play to access the `AwsMirror` project, you need to `sbt publish-local`, 
+In order for Play to access the `AwsMirror` project, you need to `sbt publish-local`,
 then create a symlink from the locally published project to Play:
 
     git clone git://github.com/mslinn/AwsMirror.git
@@ -100,10 +100,25 @@ They include user-written hooks into the public list.
 Docs are [here](https://github.com/github/github-services).
 
 ### BitBucket POST Service ###
-The Play 2 controller has not yet been written.
+The `acceptBB` Play 2 controller is the post-receive handler.
 
 Each time files are pushed to BitBucket, a POST can originate from the repo and can go a designated URL.
 For the details on the services included with Bitbucket, check out [BitBucket services](https://confluence.atlassian.com/display/BITBUCKET/Managing+bitbucket+Services).
 This Heroku app works with the [POST service](https://confluence.atlassian.com/display/BITBUCKET/Setting+Up+the+bitbucket+POST+Service).
 Basic authentication doesn't work for some of direct file routes; an internal ticket has been opened.
 BitBucket's OAuth does not yet support authenticating against private git repositories.
+
+### Testing ###
+Forward a port to your dev machine, and devine a test repo such as [awsupdatetest](https://bitbucket.org/mslinn/awsupdatetest).
+In your test repo, define a POST service that points to this Play app, running on your dev machine.
+For example: http://maya42.no-ip.info:9000/bb/accept
+You can define multiple POST services, so that several machines can debug at the same time.
+
+This bash script makes a test commit for your convenience:
+
+    #!/bin/bash
+
+    # Test commit for AwsUpdate
+    cd $aws/awsupdatetest
+    date>empty.html; git add -A .; git commit -m "testing"; git push
+

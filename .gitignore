@@ -1,4 +1,6 @@
 logs
+.idea*
+*.iml
 .cache
 .classpath
 .project
