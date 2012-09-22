@@ -118,7 +118,7 @@ This bash script makes a test commit for your convenience:
 
     #!/bin/bash
 
-    # Test commit for AwsUpdate
+    # poke: a script for testing AwsUpdate post-receive hooks
     cd $aws/awsupdatetest
     date>empty.html; git add -A .; git commit -m "testing"; git push
 
