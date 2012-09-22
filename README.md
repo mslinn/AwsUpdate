@@ -109,7 +109,7 @@ Basic authentication doesn't work for some of direct file routes; an internal ti
 BitBucket's OAuth does not yet support authenticating against private git repositories.
 
 ### Testing ###
-Forward a port to your dev machine, and devine a test repo such as [awsupdatetest](https://bitbucket.org/mslinn/awsupdatetest).
+Forward a port to your dev machine, and define a test repo such as [awsupdatetest](https://bitbucket.org/mslinn/awsupdatetest).
 In your test repo, define a POST service that points to this Play app, running on your dev machine.
 For example: http://maya42.no-ip.info:9000/bb/accept
 You can define multiple POST services, so that several machines can debug at the same time.
