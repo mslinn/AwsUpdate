@@ -1,7 +1,18 @@
 @(message: String)
 
+@import model.Model._
+@import com.amazonaws.services.s3.model.Bucket
+
 @main("AwsUpdate") {
-    
-    @(message)
-    
+  <ul>
+    @buckets.map { (bucket: Bucket) =>
+      <li style="margin-bottom: 12pt">
+          <tt><a href="@bucketUrl(bucket.getName)" target=_blank>@bucket.getName</a></tt>
+          <form action="/" method="post" style="display: inline; margin-left: 0.5em">
+              <input type="submit" name="action" value="Repopulate"/>
+              <input type="hidden" name="bucketName" value="@bucket.getName"/>
+          </form>
+      </li>
+    }
+  </ul>
 }

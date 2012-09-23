@@ -1,14 +1,16 @@
 # This file defines all application routes (Higher priority routes first)
 
 # Home page
-GET     /                           controllers.Application.index
+GET     /                                controllers.Application.index
+
+# Handler for request to copy entire BitBucket repo to AWS S3 bucket of same name
+GET     /bb/deepCopy                     controllers.Application.index
 
 # post-receive hook callback from BitBucket
 POST     /bb/accept                      controllers.Application.acceptBB
-GET      /bb/accept                      controllers.Application.acceptBB
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file               controllers.Assets.at(path="/public", file)
+GET     /assets/*file                    controllers.Assets.at(path="/public", file)
 
 # Test pages
-#GET     /public/                    staticDir:public
+#GET     /public/                        staticDir:public

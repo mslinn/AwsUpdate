@@ -13,7 +13,7 @@ object Application extends Controller {
   val s3Files = mutable.Map.empty[String, S3File]
 
   def index = Action {
-    Ok(views.html.index("AwsUpdate is ready."))
+      Ok(views.html.index("AwsUpdate is ready."))
   }
 
   /** data looks like:

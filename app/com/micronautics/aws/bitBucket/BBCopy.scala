@@ -5,13 +5,13 @@ import java.io.File
 import java.io.IOException
 import java.util.concurrent.Callable
 import BBCopy._
+import model.Model._
 
 
 // TODO this raw port from Java could be made more functional
 
 /** Only supports one BitBucket account per application */
 object BBCopy {
-    val s3 = new S3()
     val bitBucketBasicAuth = new BitBucketBasicAuth(s3)
 
   def apply(tmpDir: File, commit: Commit, fileName: String): BBCopy = {
