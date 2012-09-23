@@ -25,7 +25,7 @@ class BitBucketBasicAuth(val s3: S3) {
 
     try {
         if (userid==null && password==null) {
-            println("BitBucketBasicAuth: env vars not set, looking for BBCredentials.properties")
+            //println("BitBucketBasicAuth: env vars not set, looking for BBCredentials.properties")
             inputStream = getClass().getClassLoader().getResourceAsStream("BBCredentials.properties")
           if (inputStream==null)
               throw new Exception()
