@@ -66,22 +66,24 @@ class BitBucketBasicAuth(val s3: S3) {
 
     /** Return the URL that can fetch file contents */
     def urlStrRaw(ownerName: String, repoName: String, fileName: String): String =
-      "https://bitbucket.org/" + ownerName + "/" + repoName + "/raw/master/" + fileName
+      "https://bitbucket.org/" + ownerName.toLowerCase + "/" + repoName.toLowerCase + "/raw/master/" + fileName
 
     /** Return URL that can fetch metadata about fileName */
     def urlStrSrc(ownerName: String, repoName: String, fileName: String): String =
-      "https://bitbucket.org/" + ownerName + "/" + repoName + "/src/master/" + fileName
+      "https://bitbucket.org/" + ownerName.toLowerCase + "/" + repoName.toLowerCase + "/src/master/" + fileName
 
     def dirMetadata(ownerName: String, repoName: String, fileName: String) = {
       def url(ownerName: String, repoName: String, dirName: String) =
-        "https://api.bitbucket.org/1.0/repositories/" + ownerName + "/" + repoName + "/src/master/" + dirName
+        "https://api.bitbucket.org/1.0/repositories/" + ownerName.toLowerCase + "/" + repoName.toLowerCase + "/src/master/" + dirName
 
-	  val contents = getUrlAsString(url(ownerName, repoName, fileName))
-	  if (contents.contains("<title>Someone kicked over the bucket, sadface &mdash; Bitbucket</title>")) {
-	    val dirName = fileName.substring(0, fileName.lastIndexOf("/"))
-	    getUrlAsString(url(ownerName, repoName, dirName))
-	  } else
-	    contents
+      val dirName = fileName.substring(0, if (fileName.contains("/")) fileName.lastIndexOf("/") else fileName.length-1)
+      val theUrl = url(ownerName, repoName, dirName)
+      println("Fetching directory metadata from " + theUrl)
+      val contents = getUrlAsString(theUrl)
+//      if (contents.contains("<title>Someone kicked over the bucket, sadface &mdash; Bitbucket</title>")) {
+//        getUrlAsString(theUrl)
+//      } else
+      contents
     }
 
     /**
