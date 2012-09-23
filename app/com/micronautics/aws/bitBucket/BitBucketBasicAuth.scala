@@ -80,7 +80,7 @@ class BitBucketBasicAuth(val s3: S3) {
       def url(ownerName: String, repoName: String, dirName: String) =
         "https://api.bitbucket.org/1.0/repositories/" + ownerName.toLowerCase + "/" + repoName.toLowerCase + "/src/master/" + dirName
 
-      val dirName = fileName.substring(0, if (fileName.contains("/")) fileName.lastIndexOf("/") else fileName.length-1)
+      val dirName = fileName.substring(0, if (fileName.contains("/")) fileName.lastIndexOf("/") else 0)
       val theUrl = url(ownerName, repoName, dirName)
       println("Fetching directory metadata from " + theUrl)
       val contents = getUrlAsString(theUrl)
