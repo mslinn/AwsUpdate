@@ -1,0 +1,141 @@
+body, p, div, td, li, ol, ul, dt, dd, td, th, table {
+  margin: 0;
+  font-family: Verdana, Arial, Helvetica, helv, sans, sanserif;
+  font-size: small;
+}
+
+p, td, li, ol, ul, dt, dd, td, th, table {
+  background-color: #FFFFFF;
+}
+
+body {
+}
+
+p {
+   margin-top: 6pt;
+}
+
+a {
+  color: #336699;
+  text-decoration: underline;
+}
+
+a:hover {
+  color: #FF0000;
+  text-decoration: none;
+}
+
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: Verdana, Arial, Helvetica, helv, sans, sanserif;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 3pt;
+}
+
+h1 {
+  font-size: 14pt;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  margin-right: 6px;
+}
+
+h1 a {
+  color: #FFFFFF;
+  text-decoration: none;
+}
+
+h1 a:hover {
+  color: #FFFFFF;
+  text-decoration: underline
+}
+
+h2 {
+  font-size: 11pt;
+  margin-top: 6pt;
+  margin-bottom: 3px;
+}
+
+h3 {
+  font-size: 9pt;
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+
+h4 {
+  font-size:10pt;
+  padding-left:1em;
+}
+
+h5 {
+  font-size:10pt;
+}
+
+h6 {
+  font-size:9pt;
+}
+
+ol, ul, dl  {
+  text-align: left;
+  padding-left: 10px;
+}
+
+p {
+  text-align: justify;
+}
+
+hr {
+  height: 1px;
+  color:#999999;
+}
+
+code, pre, tt, dt tt, dt, p, th, td, ul, li {
+   font-size: 10pt;
+}
+
+li {
+  padding: 2px;
+  margin-left: 1.5em;
+}
+
+ul, ol, li {
+  padding-top: 2pt;
+
+}
+
+dt, th {
+  font-weight: bold;
+  font-family: Verdana, arial, helv, sans, sanserif;
+}
+
+
+code, tt, pre {
+  color:black;
+}
+
+code, tt, a tt, a code, tt a, code a {
+  color: black;
+  letter-spacing: normal;
+  word-spacing: normal;
+}
+
+pre {
+    background-color: #D3DFE6;
+    white-space: pre;
+    border: 1px solid gray;
+    left: 0px;
+    right: 0px;
+    margin-left: 2px;
+    padding-left:4px;
+    padding-right:4px;
+    padding-top:2px;
+    padding-bottom:2px;
+}
+
+@media print {
+    page { margin: 5pt; }
+    h1, h2, h3 { page-break-after: avoid; page-break-inside: avoid }
+    blockquote, ul, ol, dl { page-break-before: avoid }
+    body, p,  span, div { font-size: 8pt }
+    tt, pre { font-size: 7pt; }
+}
