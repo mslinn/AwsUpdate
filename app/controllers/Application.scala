@@ -33,7 +33,14 @@ object Application extends Controller {
   	            var result = commit.repoName + "\n"
   	            commit.filesToActions.keySet foreach { fileName =>
   	              result += fileName + ": " + commit.filesToActions.get(fileName) + "\n"
-                  new BBCopy(tmpDir, commit, fileName).call() // TODO use future
+                  try {
+                    val bbCopy = BBCopy(tmpDir, commit, fileName)
+                    bbCopy.call() // TODO use future
+                  } catch {
+                    case ex =>
+                      Console.err.println(ex.getMessage)
+                      PreconditionFailed(ex.getMessage)
+                  }
   	            }
 	            Ok(views.html.index("Got commit from BitBucket repo: " + result))
 	          }

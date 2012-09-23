@@ -52,13 +52,48 @@ object JSON {
             null
         }
 
+      /** repositoryNode looks like:
+        * <pre>{"repository":{"website":"https://github.com/mslinn/AwsUpdate",
+        *       "fork":false,
+        *       "name":"AwsUpdateTest",
+        *       "scm":"git",
+        *       "absolute_url":"/mslinn/awsupdatetest/",
+        *       "owner":"mslinn",
+        *       "slug":"awsupdatetest",
+        *       "is_private":false},
+        *       "commits":[{"node":"fde59cc921d0","files":[{"type":"modified","file":"empty.html"}],
+        *       "branch":"master",
+        *       "utctimestamp":"2012-09-23 01:08:48+00:00",
+        *       "author":"mslinn",
+        *       "timestamp":"2012-09-23 03:08:48",
+        *       "raw_node":"fde59cc921d0571b062dc6068c0813499ef22a58",
+        *       "parents":["0ab3d7c1370a"],
+        *       "raw_author":"Mike Slinn <mslinn@micronauticsresearch.com>",
+        *       "message":"testing\n",
+        *       "size":-1,
+        *       "revision":null}],
+        *       "canon_url":"https://bitbucket.org",
+        *       "user":"mslinn"}</pre> */
         val repositoryNode: JsonNode = rootNode.path("repository")
-        commit = Commit(repositoryNode.path("repoName").getTextValue(),
+        commit = Commit(repositoryNode.path("name").getTextValue(),
                         repositoryNode.path("owner").getTextValue())
 
+        /** commitsNode looks like:
+          * <pre>[{"node":"d7525494885a",
+          *        "files":[{"type":"modified","file":"empty.html"}],
+          *        "branch":"master",
+          *        "utctimestamp":"2012-09-23 01:13:43+00:00",
+          *        "author":"mslinn",
+          *        "timestamp":"2012-09-23 03:13:43",
+          *        "raw_node":"d7525494885ab66b794c314e8289068bc505d8f9",
+          *        "parents":["74709649faf1"],
+          *        "raw_author":"Mike Slinn <mslinn@micronauticsresearch.com>",
+          *        "message":"testing\n",
+          *        "size":-1,
+          *        "revision":null}]</pre> */
         val commitsNode  = rootNode.path("commits")
         commitsNode.getElements foreach { commitNode =>
-            val filesNode: JsonNode = commitNode.path("filesToActions")
+            val filesNode: JsonNode = commitNode.path("files")
             filesNode foreach { fileNode: JsonNode =>
                 val fileName   = fileNode.path("file").getTextValue()
                 val fileAction = fileNode.path("type").getTextValue() // Possible types are: added, modified, removed

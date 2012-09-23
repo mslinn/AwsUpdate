@@ -22,18 +22,26 @@ class BitBucketBasicAuth(val s3: S3) {
     var userid: String = System.getenv("userid")
     var password: String = System.getenv("password")
     var inputStream: InputStream = null
-    
+
     try {
         if (userid==null && password==null) {
+            println("BitBucketBasicAuth: env vars not set, looking for BBCredentials.properties")
             inputStream = getClass().getClassLoader().getResourceAsStream("BBCredentials.properties")
+          if (inputStream==null)
+              throw new Exception()
             var prop: Properties = new Properties()
             prop.load(inputStream)
             userid   = prop.getProperty("userid")
             password = prop.getProperty("password")
+          if (userid==null && password==null)
+              throw new Exception()
         }
     } catch {
       case ex: Exception =>
-        exception = ex
+        if (inputStream==null || inputStream.available==0)
+          exception = new Exception("Environment variables not defined and BBCredentials.properties not found, so cannot authenticate against BitBucket")
+        else
+          exception = ex
     } finally {
         if (inputStream!=null) try {
             inputStream.close()
@@ -57,17 +65,17 @@ class BitBucketBasicAuth(val s3: S3) {
         IOUtils.toString(getInputStream(urlStr))
 
     /** Return the URL that can fetch file contents */
-    def urlStrRaw(ownerName: String, repoName: String, fileName: String): String = 
+    def urlStrRaw(ownerName: String, repoName: String, fileName: String): String =
       "https://bitbucket.org/" + ownerName + "/" + repoName + "/raw/master/" + fileName
 
     /** Return URL that can fetch metadata about fileName */
-    def urlStrSrc(ownerName: String, repoName: String, fileName: String): String = 
+    def urlStrSrc(ownerName: String, repoName: String, fileName: String): String =
       "https://bitbucket.org/" + ownerName + "/" + repoName + "/src/master/" + fileName
-      
+
     def dirMetadata(ownerName: String, repoName: String, fileName: String) = {
       def url(ownerName: String, repoName: String, dirName: String) =
         "https://api.bitbucket.org/1.0/repositories/" + ownerName + "/" + repoName + "/src/master/" + dirName
-      
+
 	  val contents = getUrlAsString(url(ownerName, repoName, fileName))
 	  if (contents.contains("<title>Someone kicked over the bucket, sadface &mdash; Bitbucket</title>")) {
 	    val dirName = fileName.substring(0, fileName.lastIndexOf("/"))

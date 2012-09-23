@@ -13,10 +13,16 @@ import BBCopy._
 object BBCopy {
     val s3 = new S3()
     val bitBucketBasicAuth = new BitBucketBasicAuth(s3)
+
+  def apply(tmpDir: File, commit: Commit, fileName: String): BBCopy = {
+    if (bitBucketBasicAuth.exception!=null)
+      throw bitBucketBasicAuth.exception
+    new BBCopy(tmpDir, commit, fileName)
+  }
 }
 
 class BBCopy(val tmpDir: File, val commit: Commit, val fileName: String) extends Callable[Unit] {
-    
+
     /** Read file corresponding to fileName from repository into a temporary file, stream to AWS S3, then delete temporary file */
     def call(): Unit = {
         try {
@@ -31,7 +37,8 @@ class BBCopy(val tmpDir: File, val commit: Commit, val fileName: String) extends
             s3.uploadStream(commit.repoName, fileName, bitBucketBasicAuth.getInputStream(rawFileUrl), fileSize)
         } catch {
           case ex: Exception =>
-            Console.err.println(if (ex.getMessage.length==0) ex.toString else ex.getMessage)
+            println("BBCopy.call() caught an exception")
+            Console.err.println("BBCopy.call() " + (if (ex.getMessage.length==0) ex.toString else ex.getMessage))
         }
         val file = new File(fileName)
         if (file.exists)
