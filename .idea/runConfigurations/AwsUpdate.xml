@@ -6,6 +6,12 @@
     <option name="SHMEM_ADDRESS" value="javadebug" />
     <option name="HOST" value="localhost" />
     <option name="PORT" value="9999" />
+    <RunnerSettings RunnerId="Debug">
+      <option name="DEBUG_PORT" value="9999" />
+      <option name="TRANSPORT" value="0" />
+      <option name="LOCAL" value="false" />
+    </RunnerSettings>
+    <ConfigurationWrapper RunnerId="Debug" />
     <method />
   </configuration>
 </component>
