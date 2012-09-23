@@ -4,7 +4,7 @@
 GET     /                                controllers.Application.index
 
 # Handler for request to copy entire BitBucket repo to AWS S3 bucket of same name
-GET     /bb/deepCopy                     controllers.Application.index
+POST     /bb/deepCopyBB                  controllers.Application.deepCopyBB
 
 # post-receive hook callback from BitBucket
 POST     /bb/accept                      controllers.Application.acceptBB

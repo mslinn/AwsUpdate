@@ -1,15 +1,17 @@
 package controllers
 
 import play.api._
-import play.api.mvc._
+import mvc._
 import java.io.File
-import scala.collection.JavaConversions._
 import com.micronautics.aws.bitBucket.BBCopy
 import com.micronautics.aws.S3File
 import scala.collection.mutable
+import scala.collection.JavaConversions._
+import scala.Some
 
 object Application extends Controller {
-  lazy val tmpDir = new File(System.getProperty("java.io.tmpdir")) // TODO use /var/tmp on Linux instead?
+  // TODO use stream to stream copy, so no temp files are required
+  lazy val tmpDir = new File(System.getProperty("java.io.tmpdir"))
   val s3Files = mutable.Map.empty[String, S3File]
 
   def index = Action {
@@ -29,7 +31,6 @@ object Application extends Controller {
               } else {
   	            val payload = payloadList.head
   	            val commit = com.micronautics.aws.bitBucket.JSON.parseCommit(payload)
-  	            val s3 = commit.repoName
   	            var result = commit.repoName + "\n"
   	            commit.filesToActions.keySet foreach { fileName =>
   	              result += fileName + ": " + commit.filesToActions.get(fileName) + "\n"
@@ -52,5 +53,21 @@ object Application extends Controller {
 	    case None =>
 	      BadRequest("No POST data found")
 	  }
+  }
+
+  def deepCopyBB = Action { implicit request =>
+	  request.body.asFormUrlEncoded match {
+	    case Some(data) =>
+        data.get("bucketName") match {
+          case Some(bucketName) =>
+            Ok(views.html.deepCopyBB(bucketName.head))
+
+          case _ =>
+            BadRequest("payload list was empty")
+        }
+
+      case None =>
+        BadRequest("No POST data found")
+    }
   }
 }
