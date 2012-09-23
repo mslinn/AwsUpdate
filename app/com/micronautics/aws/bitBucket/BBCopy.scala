@@ -34,7 +34,7 @@ class BBCopy(val tmpDir: File, val commit: Commit, val fileName: String) extends
             //result += "  " + fileName + ": " + commit.filesToActions.get(fileName) + " " + fileSize + "bytes from " + rawFileUrl + "\n";
             System.out.println("Copying '" + fileName + "' (" + fileSize + " bytes) to bucket '" + commit.repoName + "', owned by '" + commit.ownerName + "'")
             // TODO ensure bucket exists
-            s3.uploadStream(commit.repoName, fileName, bitBucketBasicAuth.getInputStream(rawFileUrl), fileSize)
+            s3.uploadStream(commit.repoName.toLowerCase, fileName, bitBucketBasicAuth.getInputStream(rawFileUrl), fileSize)
         } catch {
           case ex: Exception =>
             println("BBCopy.call() caught an exception")
