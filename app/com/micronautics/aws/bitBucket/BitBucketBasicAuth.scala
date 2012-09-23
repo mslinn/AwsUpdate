@@ -64,14 +64,18 @@ class BitBucketBasicAuth(val s3: S3) {
     def getUrlAsString(urlStr: String): String =
         IOUtils.toString(getInputStream(urlStr))
 
-    /** Return the URL that can fetch file contents */
+    /** Return the URL that can fetch file contents
+      * @see https://confluence.atlassian.com/display/BITBUCKET/Using+the+bitbucket+REST+APIs */
     def urlStrRaw(ownerName: String, repoName: String, fileName: String): String =
       "https://bitbucket.org/" + ownerName.toLowerCase + "/" + repoName.toLowerCase + "/raw/master/" + fileName
 
-    /** Return URL that can fetch metadata about fileName */
+    /** Return URL that can fetch metadata about fileName
+      * @see https://confluence.atlassian.com/display/BITBUCKET/Using+the+bitbucket+REST+APIs */
     def urlStrSrc(ownerName: String, repoName: String, fileName: String): String =
       "https://bitbucket.org/" + ownerName.toLowerCase + "/" + repoName.toLowerCase + "/src/master/" + fileName
 
+  /** Return directory metadata
+    * @see https://confluence.atlassian.com/display/BITBUCKET/Using+the+bitbucket+REST+APIs */
     def dirMetadata(ownerName: String, repoName: String, fileName: String) = {
       def url(ownerName: String, repoName: String, dirName: String) =
         "https://api.bitbucket.org/1.0/repositories/" + ownerName.toLowerCase + "/" + repoName.toLowerCase + "/src/master/" + dirName

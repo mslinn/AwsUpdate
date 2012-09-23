@@ -39,9 +39,10 @@ class BBCopy(val tmpDir: File, val commit: Commit, val fileName: String) extends
           case ex: Exception =>
             println("BBCopy.call() caught an exception")
             Console.err.println("BBCopy.call() " + (if (ex.getMessage.length==0) ex.toString else ex.getMessage))
+        } finally {
+          val file = new File(fileName)
+          if (file.exists)
+            file.delete
         }
-        val file = new File(fileName)
-        if (file.exists)
-          file.delete
     }
 }
