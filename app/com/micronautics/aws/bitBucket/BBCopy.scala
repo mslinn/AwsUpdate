@@ -2,7 +2,6 @@ package com.micronautics.aws.bitBucket
 
 import java.io.File
 import java.util.concurrent.Callable
-import BBCopy._
 import model.Model._
 
 
@@ -10,8 +9,6 @@ import model.Model._
 
 /** Only supports one BitBucket account per application */
 object BBCopy {
-  val bitBucketBasicAuth = new BitBucketBasicAuth(s3)
-
   def apply(tmpDir: File, commit: Commit, fileName: String): BBCopy = {
     if (bitBucketBasicAuth.exception!=null)
       throw bitBucketBasicAuth.exception
@@ -52,7 +49,7 @@ class BBCopy(val tmpDir: File, val commit: Commit, val fileName: String) extends
         try {
             val fileSize: Int = JSON.parseFileSize(fileMetaJson, fileName)
             val rawFileUrl: String = bitBucketBasicAuth.urlStrRaw(commit.ownerName, commit.repoName, fileName)
-            val action: String = commit.filesToActions.get(fileName);
+            val action: String = commit.filesToActions.get(fileName)
             // TODO ensure bucket exists
             action match {
               case "added" =>

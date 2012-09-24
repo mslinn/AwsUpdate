@@ -8,8 +8,8 @@
         if (!s3.bucketExists(bucketName)) {
           "Error: Bucket %s is not defined".format(bucketName)
         } else {
-            val ownerName = BBCopy.bitBucketBasicAuth.userid
-            val fileMetaJson: String = BBCopy.bitBucketBasicAuth.dirMetadata(ownerName, bucketName, "")
+            val ownerName = bitBucketBasicAuth.userid
+            val fileMetaJson: String = bitBucketBasicAuth.dirMetadata(ownerName, bucketName, "")
             //val fileSize: Int = JSON.parseFileSize(fileMetaJson, fileName)
             ownerName + "; " + fileMetaJson
         }

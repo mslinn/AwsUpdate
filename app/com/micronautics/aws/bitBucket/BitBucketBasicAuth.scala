@@ -1,6 +1,5 @@
 package com.micronautics.aws.bitBucket
 
-import java.io.IOException
 import java.io.InputStream
 import java.util.Properties
 import com.micronautics.aws.S3
@@ -8,7 +7,6 @@ import org.apache.commons.io.IOUtils
 import org.apache.http.HttpEntity
 import org.apache.http.HttpResponse
 import org.apache.http.auth.UsernamePasswordCredentials
-import org.apache.http.client.HttpClient
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.auth.BasicScheme
 import org.apache.http.impl.client.DefaultHttpClient
@@ -89,6 +87,8 @@ class BitBucketBasicAuth(val s3: S3) {
 //      } else
       contents
     }
+
+    def repoExists(repoName: String): Boolean = dirMetadata(userid, repoName, "") != "Not Found"
 
     /**
      * <p><tt>raw</tt> URL with filename  just returns the file contents:<br/>

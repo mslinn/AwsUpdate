@@ -7,7 +7,9 @@
   <ul>
     @buckets.map { (bucket: Bucket) =>
       <li style="margin-bottom: 12pt">
-          <tt><a href="@bucketUrl(bucket.getName)" target=_blank>@bucket.getName</a></tt>
+          <tt>@if(bitBucketBasicAuth.repoExists(bucket.getName)) {
+              <a href="@bucketUrl(bucket.getName)" target=_blank>@bucket.getName</a>
+              } else { @bucket.getName } </tt>
           <form action="/bb/deepCopyBB" method="post" style="display: inline; margin-left: 0.5em">
               <input type="submit" name="action" value="Deep copy" class="smallButton" />
               <input type="hidden" name="bucketName" value="@bucket.getName"/>
