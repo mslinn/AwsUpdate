@@ -15,7 +15,9 @@ object Application extends Controller {
   val s3Files = mutable.Map.empty[String, S3File]
 
   def index = Action {
-      Ok(views.html.index("AwsUpdate is ready."))
+    val x = Model.s3.s3.getBucketWebsiteConfiguration("www.slinnbooks.com")
+    val y = Model.s3.isWebsiteEnabled("blah")
+    Ok(views.html.index("AwsUpdate is ready."))
   }
 
   /** Handler for post-receive hook action by BitBucket */

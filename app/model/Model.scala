@@ -12,7 +12,7 @@ object Model {
   val bitBucketBasicAuth = new BitBucketBasicAuth(s3)
   val listBucketsRequest = new ListBucketsRequest
 
-  /** Endpoint was not returned in BucketWebsiteConfiguration by AmazoneS3Client v3.14 - has this changed? */
+  /** Endpoint was not returned in BucketWebsiteConfiguration by Amazon S3Client v3.14 - has this changed? */
   // TODO compute this value for each bucket
   def endpoint(bucketName: String): String = "s3-website-us-east-1.amazonaws.com"
 
