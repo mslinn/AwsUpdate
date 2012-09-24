@@ -18,8 +18,31 @@ object Application extends Controller {
       Ok(views.html.index("AwsUpdate is ready."))
   }
 
-  /** data looks like:
-    * <pre>Map(payload -> List({"repository": {"website": "https://github.com/mslinn/AwsUpdate", "fork": false, "name": "AwsUpdateTest", "scm": "git", "absolute_url": "/mslinn/awsupdatetest/", "owner": "mslinn", "slug": "awsupdatetest", "is_private": false}, "commits": [{"node": "64d92b2400cc", "files": [{"type": "modified", "file": "empty.html"}], "branch": "master", "utctimestamp": "2012-09-22 16:05:36+00:00", "author": "mslinn", "timestamp": "2012-09-22 18:05:36", "raw_node": "64d92b2400cc4798e77802a4f60dc62871b89cc7", "parents": ["fd2a0f821000"], "raw_author": "Mike Slinn <mslinn@mslinn.com>", "message": "testing\n", "size": -1, "revision": null}], "canon_url": "https://bitbucket.org", "user": "mslinn"}))</pre>
+  /** `data` looks like:
+    * <pre>Map(payload -> List({"repository": {
+    *   "website": "https://github.com/mslinn/AwsUpdate",
+    *   "fork": false,
+    *   "name": "AwsUpdateTest",
+    *   "scm": "git",
+    *   "absolute_url": "/mslinn/awsupdatetest/",
+    *   "owner": "mslinn",
+    *   "slug": "awsupdatetest",
+    *   "is_private": false},
+    *   "commits": [{"node": "64d92b2400cc",
+    *                "files": [{"type": "modified", "file": "empty.html"}],
+    *                "branch": "master",
+    *                "utctimestamp": "2012-09-22 16:05:36+00:00",
+    *                "author": "mslinn",
+    *                "timestamp": "2012-09-22 18:05:36",
+    *                "raw_node": "64d92b2400cc4798e77802a4f60dc62871b89cc7",
+    *                "parents": ["fd2a0f821000"],
+    *                "raw_author":
+    *                "Mike Slinn <mslinn@mslinn.com>",
+    *                "message": "testing\n",
+    *                "size": -1,
+    *                "revision": null}],
+    *   "canon_url": "https://bitbucket.org",
+    *   "user": "mslinn"}))</pre>
     */
   def acceptBB = Action { implicit request =>
 	  request.body.asFormUrlEncoded match {

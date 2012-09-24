@@ -74,7 +74,7 @@ class BitBucketBasicAuth(val s3: S3) {
     def urlStrSrc(ownerName: String, repoName: String, fileName: String): String =
       "https://bitbucket.org/" + ownerName.toLowerCase + "/" + repoName.toLowerCase + "/src/master/" + fileName
 
-  /** Return directory metadata
+  /** @return directory metadata in JSON format or "Not Found"
     * @see https://confluence.atlassian.com/display/BITBUCKET/Using+the+bitbucket+REST+APIs */
     def dirMetadata(ownerName: String, repoName: String, fileName: String) = {
       def url(ownerName: String, repoName: String, dirName: String) =
