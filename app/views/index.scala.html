@@ -4,7 +4,7 @@
 @import com.amazonaws.services.s3.model.Bucket
 @import com.micronautics.aws.bitBucket.BBRepository
 
-@main("Your Data") {
+@main("Your AWS S3 and BitBucket Data") {
   <h2>Your AWS S3 Buckets</h2>
   <table>
     @buckets.map { (bucket: Bucket) =>
