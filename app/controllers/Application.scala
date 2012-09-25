@@ -82,7 +82,7 @@ object Application extends Controller {
   }
 
   /** Handler for user-driven copy of an entire BitBucket repo to an AWS S3 bucket of the same name */
-  def deepCopyBB = Action { implicit request =>
+  def publishBB = Action { implicit request =>
 	  request.body.asFormUrlEncoded match {
 	    case Some(data) =>
         val createBucketIfNecessary = data.getOrElse("createBucketIfNecessary", true).asInstanceOf[Boolean]

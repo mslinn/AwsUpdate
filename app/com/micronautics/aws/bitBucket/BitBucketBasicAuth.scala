@@ -10,6 +10,9 @@ import org.apache.http.auth.UsernamePasswordCredentials
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.auth.BasicScheme
 import org.apache.http.impl.client.DefaultHttpClient
+import com.codahale.jerkson.Json._
+import scala.collection.JavaConversions._
+import java.util.{LinkedHashMap, ArrayList}
 
 
 // TODO this raw port from Java could be made more functional
@@ -67,10 +70,66 @@ class BitBucketBasicAuth(val s3: S3) {
     def urlStrRaw(ownerName: String, repoName: String, fileName: String): String =
       "https://bitbucket.org/" + ownerName.toLowerCase + "/" + repoName.toLowerCase + "/raw/master/" + fileName
 
-    /** Return URL that can fetch metadata about fileName
-      * @see https://confluence.atlassian.com/display/BITBUCKET/Using+the+bitbucket+REST+APIs */
-    def urlStrSrc(ownerName: String, repoName: String, fileName: String): String =
-      "https://bitbucket.org/" + ownerName.toLowerCase + "/" + repoName.toLowerCase + "/src/master/" + fileName
+  /** Return URL that can fetch metadata about fileName
+    * @see https://confluence.atlassian.com/display/BITBUCKET/Using+the+bitbucket+REST+APIs */
+  def urlStrSrc(ownerName: String, repoName: String, fileName: String): String =
+    "https://bitbucket.org/" + ownerName.toLowerCase + "/" + repoName.toLowerCase + "/src/master/" + fileName
+
+  /** Return URL that can fetch metadata about fileName
+    * This doc is WRONG: https://confluence.atlassian.com/display/BITBUCKET/Using+the+bitbucket+REST+APIs
+    * @return <pre>{
+        "repositories": [
+            {
+                "scm": "git",
+                "has_wiki": true,
+                "last_updated": "2012-09-23 05:00:05",
+                "creator": null,
+                "created_on": "2012-09-23 05:00:05",
+                "owner": "mslinn",
+                "logo": null,
+                "email_mailinglist": "",
+                "is_mq": false,
+                "size": 580,
+                "read_only": false,
+                "fork_of": null,
+                "mq_of": null,
+                "followers_count": 1,
+                "state": "available",
+                "utc_created_on": "2012-09-23 03:00:05+00:00",
+                "website": "",
+                "description": "",
+                "has_issues": true,
+                "is_fork": false,
+                "slug": "www.slinnbooks.com",
+                "is_private": true,
+                "name": "www.slinnbooks.com",
+                "language": "",
+                "utc_last_updated": "2012-09-23 03:00:05+00:00",
+                "email_writers": true,
+                "no_public_forks": false,
+                "resource_uri": "/1.0/repositories/mslinn/www.slinnbooks.com"
+            }, ...
+        ],
+        "user": {
+            "username": "mslinn",
+            "first_name": "Michael",
+            "last_name": "Slinn",
+            "is_team": false,
+            "avatar": "https://secure.gravatar.com/avatar/d1f530945b209174d116ed37dc123a62?d=identicon&s=32",
+            "resource_uri": "/1.0/users/mslinn"
+        }</pre> */
+  def urlRepositories(ownerName: String): String =
+    "https://api.bitbucket.org/1.0/users/" + ownerName.toLowerCase
+
+  def repositoryObjects(ownerName: String): List[BBRepository] = {
+    val jsonStr: String = getUrlAsString(urlRepositories(ownerName))
+    val json: LinkedHashMap[String, Any] = parse(jsonStr)
+    if (json.size()==2) {
+      val reposJson = json.get("repositories").asInstanceOf[ArrayList[LinkedHashMap[String, Any]]]
+      reposJson.toList map { (x: LinkedHashMap[String, Any]) => BBRepository(x) }
+    } else // badly formed JSON; perhaps invalid user name? TODO look into error handling
+      Nil
+  }
 
   /** @return directory metadata in JSON format or "Not Found"
     * @see https://confluence.atlassian.com/display/BITBUCKET/Using+the+bitbucket+REST+APIs */

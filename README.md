@@ -151,5 +151,5 @@ This bash script makes a test commit for your convenience:
 
     # poke: a script for testing AwsUpdate post-receive hooks
     cd $aws/awsupdatetest
-    date>empty.html; git add -A .; git commit -m "testing"; git push
+    date>test.html; git add -A .; git commit -m "testing"; git push
 

@@ -2,19 +2,37 @@
 
 @import model.Model._
 @import com.amazonaws.services.s3.model.Bucket
+@import com.micronautics.aws.bitBucket.BBRepository
 
-@main("Your AWS S3 Buckets") {
+@main("Your Data") {
+  <h2>Your AWS S3 Buckets</h2>
   <table>
     @buckets.map { (bucket: Bucket) =>
       <tr>
-          <td valign="middle"><form action="/bb/deepCopyBB" method="post" style="display: inline;">
-              <input type="submit" name="action" value="@if(bitBucketBasicAuth.repoExists(bucket.getName)) { Deep copy } else { Create repo }" class="smallButton" />
+          <td width=20>&nbsp;</td>
+          <td valign="middle">@if(bitBucketBasicAuth.repoExists(bucket.getName)) { <form action="/bb/publish" method="post" style="display: inline;">
+              <input type="submit" name="action" value="@if(bitBucketBasicAuth.repoExists(bucket.getName)) { Publish } else { Create repo }" class="smallButton" />
               <input type="hidden" name="bucketName" value="@bucket.getName"/>
-          </form></td>
+          </form> } </td>
           <td valign="middle"><tt>@if(s3.isWebsiteEnabled(bucket.getName)) {
               <a href="@bucketUrl(bucket.getName)" target=_blank>@bucket.getName</a>
               } else { @bucket.getName } </tt></td>
       </tr>
     }
   </table>
+
+  <h2>Your BitBucket Repositories</h2>
+  <table>
+    @repos.map { (repo: BBRepository) =>
+      <tr><form action="/bb/publish" method="post" style="display: inline;">
+        <td valign="middle" width=20><input type="checkbox" name="enableWebSite" checked="yes" title="Enable web site" /></td>
+        <td valign="middle">
+            <input type="submit" name="action" value="Publish" class="smallButton @if(s3.bucketExists(repo.repoName)) { green } else { red }" />
+        </td>
+        <td valign="middle"><tt> @repo.repoName </tt></td>
+        @if(!s3.bucketExists(repo.repoName)) { <input type="hidden" name="createS3Bucket" value="true"/> }
+        <input type="hidden" name="bucketName" value="@repo.repoName"/>
+      </form></tr>
+      }
+    </table>
 }

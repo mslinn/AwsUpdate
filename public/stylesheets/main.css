@@ -25,7 +25,6 @@ a:hover {
   text-decoration: none;
 }
 
-
 h1, h2, h3, h4, h5, h6 {
   font-family: Verdana, Arial, Helvetica, helv, sans, sanserif;
   font-weight: bold;
@@ -131,6 +130,10 @@ pre {
     padding-top:2px;
     padding-bottom:2px;
 }
+
+.green { background-color: green; }
+
+.red { background-color: red; }
 
 .smallButton {
     padding: 0;
