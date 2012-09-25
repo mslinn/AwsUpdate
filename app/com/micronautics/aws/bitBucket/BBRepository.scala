@@ -56,4 +56,6 @@ class BBRepository(val repoName: String,
                    val lastUpdated: DateTime,
                    val owner: String,
                    val website: String,
-                   val isPrivate: Boolean)
+                   val isPrivate: Boolean) extends Ordered[BBRepository] {
+  def compare(that: BBRepository) = this.repoName compare that.repoName
+}

@@ -22,5 +22,5 @@ object Model {
   def buckets = amazonS3Client.listBuckets(listBucketsRequest).toArray.toList.asInstanceOf[List[Bucket]]
 
   /** Repos can be created any time so this value is volatile */
-  def repos: List[BBRepository] = bitBucketBasicAuth.repositoryObjects(bitBucketBasicAuth.userid)
+  def repos: List[BBRepository] = bitBucketBasicAuth.repositoryObjects(bitBucketBasicAuth.userid).sorted
 }
