@@ -3,7 +3,7 @@ package controllers
 import play.api._
 import mvc._
 import java.io.File
-import com.micronautics.aws.bitBucket.BBCopy
+import com.micronautics.aws.bitBucket.BBCommitHandler
 import com.micronautics.aws.S3File
 import scala.collection.mutable
 import scala.collection.JavaConversions._
@@ -11,7 +11,6 @@ import scala.Some
 import model.Model
 
 object Application extends Controller {
-  lazy val tmpDir = new File(System.getProperty("java.io.tmpdir"))
   val s3Files = mutable.Map.empty[String, S3File]
 
   def index = Action {
@@ -61,7 +60,7 @@ object Application extends Controller {
   	            commit.filesToActions.keySet foreach { fileName =>
   	              result += fileName + ": " + commit.filesToActions.get(fileName) + "\n"
                   try {
-                    val bbCopy = BBCopy(tmpDir, commit, fileName)
+                    val bbCopy = BBCommitHandler(commit, fileName)
                     bbCopy.call() // TODO use future
                   } catch {
                     case ex =>
@@ -91,11 +90,11 @@ object Application extends Controller {
             if (!Model.s3.bucketExists(bucketNames.head)) {
               if (createBucketIfNecessary) {
                 Model.s3.createBucket(bucketNames.head)
-                Ok(views.html.deepCopyBB(bucketNames.head))
+                Ok(views.html.publishBB(bucketNames.head))
               } else
-                Ok(bucketNames.head + " does not exist and automatic creation was not enabled so deep copy was not performed")
+                Ok("AWS S3 bucket '" + bucketNames.head + "' does not exist and automatic creation was not enabled so BitBucket repo was not published")
             } else
-              Ok(views.html.deepCopyBB(bucketNames.head))
+              Ok(views.html.publishBB(bucketNames.head))
 
           case _ =>
             BadRequest("bucketName was not specified")

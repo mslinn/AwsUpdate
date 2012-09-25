@@ -1,74 +1,53 @@
 package com.micronautics.aws.bitBucket
 
-import java.io.InputStream
-import java.util.Properties
+import BitBucketBasicAuth._
+import com.codahale.jerkson.Json._
 import com.micronautics.aws.S3
+import java.io.InputStream
+import java.util.{ArrayList, LinkedHashMap, Properties}
 import org.apache.commons.io.IOUtils
-import org.apache.http.HttpEntity
-import org.apache.http.HttpResponse
+import org.apache.http.{HttpEntity, HttpResponse}
 import org.apache.http.auth.UsernamePasswordCredentials
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.auth.BasicScheme
 import org.apache.http.impl.client.DefaultHttpClient
-import com.codahale.jerkson.Json._
 import scala.collection.JavaConversions._
-import java.util.{LinkedHashMap, ArrayList}
 
 
 // TODO this raw port from Java could be made more functional
 
-class BitBucketBasicAuth(val s3: S3) {
-    /**@see https://github.com/fernandezpablo85/scribe-java/wiki/getting-started */
-    var exception: Exception = null
-    var userid: String = System.getenv("userid")
-    var password: String = System.getenv("password")
-    var inputStream: InputStream = null
-
-    try {
-        if (userid==null && password==null) {
-            //println("BitBucketBasicAuth: env vars not set, looking for BBCredentials.properties")
-            inputStream = getClass().getClassLoader().getResourceAsStream("BBCredentials.properties")
-          if (inputStream==null)
-              throw new Exception()
-            var prop: Properties = new Properties()
-            prop.load(inputStream)
-            userid   = prop.getProperty("userid")
-            password = prop.getProperty("password")
-          if (userid==null && password==null)
-              throw new Exception()
-        }
-    } catch {
-      case ex: Exception =>
-        if (inputStream==null || inputStream.available==0)
-          exception = new Exception("Environment variables not defined and BBCredentials.properties not found, so cannot authenticate against BitBucket")
-        else
-          exception = ex
-    } finally {
-        if (inputStream!=null) try {
-            inputStream.close()
-        } catch {
-          case _ =>
-        }
-    }
-
-    /** Return the contents of the file at urlStr as an inputStream */
-    def getInputStream(urlStr: String): InputStream = {
-        val httpClient = new DefaultHttpClient()
-        val httpGet = new HttpGet(urlStr)
-        httpGet.addHeader(BasicScheme.authenticate(new UsernamePasswordCredentials(userid, password), "UTF-8", false))
-        val httpResponse: HttpResponse = httpClient.execute(httpGet)
-        val responseEntity: HttpEntity = httpResponse.getEntity()
-        responseEntity.getContent()
-    }
-
-    /** Return the contents of the file at urlStr as a String */
-    def getUrlAsString(urlStr: String): String =
-        IOUtils.toString(getInputStream(urlStr))
-
-    /** Return the URL that can fetch file contents
-      * @see https://confluence.atlassian.com/display/BITBUCKET/Using+the+bitbucket+REST+APIs */
-    def urlStrRaw(ownerName: String, repoName: String, fileName: String): String =
-      "https://bitbucket.org/" + ownerName.toLowerCase + "/" + repoName.toLowerCase + "/raw/master/" + fileName
+object BitBucketBasicAuth {
+  /** Return the URL that can fetch file contents
+    * @param path can be a filename or a directory path.
+    *             If `path` is empty or ends with `/` the request is interpreted as a directory request and returns a list.
+    * @see https://confluence.atlassian.com/display/BITBUCKET/Using+the+bitbucket+REST+APIs
+    * @return <pre>{
+        "node": "562344e0ae10",
+        "path": "/",
+        "directories": [
+            "images",
+            "javascripts",
+            "stylesheets"
+        ],
+        "files": [
+            {
+                "size": 577,
+                "path": "Readme",
+                "timestamp": "2012-06-13 22:07:20",
+                "utctimestamp": "2012-06-13 22:07:20+00:00",
+                "revision": "4dd1b211d689"
+            },
+            {
+                "size": 144855,
+                "path": "index.html",
+                "timestamp": "2012-08-12 02:06:43",
+                "utctimestamp": "2012-08-12 02:06:43+00:00",
+                "revision": "562344e0ae10"
+            } ...
+        ]
+    }</pre> */
+  def urlStrRaw(ownerName: String, repoName: String, path: String): String =
+    "https://api.bitbucket.org/1.0/repositories/" + ownerName.toLowerCase + "/" + repoName.toLowerCase + "/src/master/" + path
 
   /** Return URL that can fetch metadata about fileName
     * @see https://confluence.atlassian.com/display/BITBUCKET/Using+the+bitbucket+REST+APIs */
@@ -118,8 +97,86 @@ class BitBucketBasicAuth(val s3: S3) {
             "avatar": "https://secure.gravatar.com/avatar/d1f530945b209174d116ed37dc123a62?d=identicon&s=32",
             "resource_uri": "/1.0/users/mslinn"
         }</pre> */
-  def urlRepositories(ownerName: String): String =
-    "https://api.bitbucket.org/1.0/users/" + ownerName.toLowerCase
+  def urlRepositories(ownerName: String): String = "https://api.bitbucket.org/1.0/users/" + ownerName.toLowerCase
+}
+
+class BitBucketBasicAuth(val s3: S3) {
+  /**@see https://github.com/fernandezpablo85/scribe-java/wiki/getting-started */
+  var exception: Exception = null
+  var userid: String = System.getenv("userid")
+  var password: String = System.getenv("password")
+  var inputStream: InputStream = null
+
+  try {
+      if (userid==null && password==null) {
+          //println("BitBucketBasicAuth: env vars not set, looking for BBCredentials.properties")
+          inputStream = getClass().getClassLoader().getResourceAsStream("BBCredentials.properties")
+        if (inputStream==null)
+            throw new Exception()
+          var prop: Properties = new Properties()
+          prop.load(inputStream)
+          userid   = prop.getProperty("userid")
+          password = prop.getProperty("password")
+        if (userid==null && password==null)
+            throw new Exception()
+      }
+  } catch {
+    case ex: Exception =>
+      if (inputStream==null || inputStream.available==0)
+        exception = new Exception("Environment variables not defined and BBCredentials.properties not found, so cannot authenticate against BitBucket")
+      else
+        exception = ex
+  } finally {
+      if (inputStream!=null) try {
+          inputStream.close()
+      } catch {
+        case _ =>
+      }
+  }
+
+  /**
+    * <p><tt>raw</tt> URL with filename  just returns the file contents:<br/>
+    * <tt>curl --user user:password https://api.bitbucket.org/1.0/repositories/$owner/$repo/raw/master/$file</tt></p>
+    * <p><tt>src</tt> URL without filename returns directory metadata in JSON format:<br/>
+    * <tt>curl --user user:password https://api.bitbucket.org/1.0/repositories/$owner/$repo/src/master/$dir</tt> */
+  def copyUrlToAWS(ownerName: String, repoName: String, fileName: String, bucketName: String, key: String) {
+      val urlStrIn: String = urlStrSrc(ownerName, repoName, fileName)
+      val payload = getUrlAsString(urlStrIn)
+      val filesize = JSON.parseFileSize(payload, urlStrIn)
+      val urlRawIn = urlStrRaw(ownerName, repoName, fileName)
+      s3.uploadStream(bucketName, key, getInputStream(urlRawIn), filesize)
+  }
+
+  /** @return directory metadata in JSON format or "Not Found"
+    * @see https://confluence.atlassian.com/display/BITBUCKET/Using+the+bitbucket+REST+APIs */
+  def dirMetadata(ownerName: String, repoName: String, fileName: String) = {
+    def url(ownerName: String, repoName: String, dirName: String) =
+      "https://api.bitbucket.org/1.0/repositories/" + ownerName.toLowerCase + "/" + repoName.toLowerCase + "/src/master/" + dirName
+
+    val dirName = fileName.substring(0, if (fileName.contains("/")) fileName.lastIndexOf("/") else 0)
+    val theUrl = url(ownerName, repoName, dirName)
+    println("Fetching directory metadata from " + theUrl)
+    val contents = getUrlAsString(theUrl)
+//      if (contents.contains("<title>Someone kicked over the bucket, sadface &mdash; Bitbucket</title>")) {
+//        getUrlAsString(theUrl)
+//      } else
+    contents
+  }
+
+  /** Return the contents of the file at urlStr as an inputStream */
+  def getInputStream(urlStr: String): InputStream = {
+      val httpClient = new DefaultHttpClient()
+      val httpGet = new HttpGet(urlStr)
+      httpGet.addHeader(BasicScheme.authenticate(new UsernamePasswordCredentials(userid, password), "UTF-8", false))
+      val httpResponse: HttpResponse = httpClient.execute(httpGet)
+      val responseEntity: HttpEntity = httpResponse.getEntity()
+      responseEntity.getContent()
+  }
+
+  /** Return the contents of the file at urlStr as a String */
+  def getUrlAsString(urlStr: String): String = IOUtils.toString(getInputStream(urlStr))
+
+  def repoExists(repoName: String): Boolean = dirMetadata(userid, repoName, "") != "Not Found"
 
   def repositoryObjects(ownerName: String): List[BBRepository] = {
     val jsonStr: String = getUrlAsString(urlRepositories(ownerName))
@@ -130,35 +187,4 @@ class BitBucketBasicAuth(val s3: S3) {
     } else // badly formed JSON; perhaps invalid user name? TODO look into error handling
       Nil
   }
-
-  /** @return directory metadata in JSON format or "Not Found"
-    * @see https://confluence.atlassian.com/display/BITBUCKET/Using+the+bitbucket+REST+APIs */
-    def dirMetadata(ownerName: String, repoName: String, fileName: String) = {
-      def url(ownerName: String, repoName: String, dirName: String) =
-        "https://api.bitbucket.org/1.0/repositories/" + ownerName.toLowerCase + "/" + repoName.toLowerCase + "/src/master/" + dirName
-
-      val dirName = fileName.substring(0, if (fileName.contains("/")) fileName.lastIndexOf("/") else 0)
-      val theUrl = url(ownerName, repoName, dirName)
-      println("Fetching directory metadata from " + theUrl)
-      val contents = getUrlAsString(theUrl)
-//      if (contents.contains("<title>Someone kicked over the bucket, sadface &mdash; Bitbucket</title>")) {
-//        getUrlAsString(theUrl)
-//      } else
-      contents
-    }
-
-    def repoExists(repoName: String): Boolean = dirMetadata(userid, repoName, "") != "Not Found"
-
-    /**
-     * <p><tt>raw</tt> URL with filename  just returns the file contents:<br/>
-     * <tt>curl --user user:password https://api.bitbucket.org/1.0/repositories/$owner/$repo/raw/master/$file</tt></p>
-     * <p><tt>src</tt> URL without filename returns directory metadata in JSON format:<br/>
-     * <tt>curl --user user:password https://api.bitbucket.org/1.0/repositories/$owner/$repo/src/master/$dir</tt> */
-    def copyUrlToAWS(ownerName: String, repoName: String, fileName: String, bucketName: String, key: String) {
-        val urlStrIn: String = urlStrSrc(ownerName, repoName, fileName)
-        val payload = getUrlAsString(urlStrIn)
-        val filesize = JSON.parseFileSize(payload, urlStrIn)
-        val urlRawIn = urlStrRaw(ownerName, repoName, fileName)
-        s3.uploadStream(bucketName, key, getInputStream(urlRawIn), filesize)
-    }
 }

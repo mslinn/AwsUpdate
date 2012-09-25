@@ -44,10 +44,10 @@ object JSON {
         val mapper = new ObjectMapper()
         mapper.configure(JsonParser.Feature.ALLOW_COMMENTS, true)
         var rootNode: JsonNode = try {
-            mapper.readValue(payload, classOf[JsonNode])
+          mapper.readValue(payload, classOf[JsonNode])
         } catch {
           case e: IOException =>
-        	System.err.println(e.getMessage())
+        	  System.err.println(e.getMessage())
             return commit
             null
         }

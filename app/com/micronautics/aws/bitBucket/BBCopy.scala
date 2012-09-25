@@ -1,80 +1,68 @@
 package com.micronautics.aws.bitBucket
 
-import java.io.File
-import java.util.concurrent.Callable
+import annotation.tailrec
+import BitBucketBasicAuth._
+import com.micronautics.aws.bitBucket.BitBucketBasicAuth._
+import java.io.{File}
 import model.Model._
-
-
-// TODO this raw port from Java could be made more functional
+import org.codehaus.jackson.{JsonNode, JsonParser}
+import org.codehaus.jackson.map.ObjectMapper
+import collection.JavaConversions._
 
 /** Only supports one BitBucket account per application */
 object BBCopy {
-  def apply(tmpDir: File, commit: Commit, fileName: String): BBCopy = {
+  def apply(repoName: String) {
     if (bitBucketBasicAuth.exception!=null)
       throw bitBucketBasicAuth.exception
-    new BBCopy(tmpDir, commit, fileName)
-  }
-}
 
-/** @param fileName is fully qualified without a leading slash */
-class BBCopy(val tmpDir: File, val commit: Commit, val fileName: String) extends Callable[Unit] {
-  /** <pre>{
-      "node": "ee510da4ba9e",
-      "path": "/",
-      "directories": [
-          "Scripts",
-          "_notes",
-          "expert",
-          "images",
-          "sites",
-          "testimonials"
-      ],
-      "files": [
-          {
-              "size": 51,
-              "path": ".gitignore",
-              "timestamp": "2012-09-23 19:57:07",
-              "utctimestamp": "2012-09-23 19:57:07+00:00",
-              "revision": "ee510da4ba9e"
-          }, ...
-      ]
-  }</pre> */
-  val fileMetaJson: String = bitBucketBasicAuth.dirMetadata(commit.ownerName, commit.repoName, fileName)
-  if (fileMetaJson=="Not Found")
-    println("No files have been checked into the repository.")
+    val ownerName = bitBucketBasicAuth.userid
+    val fileMetaJson: String = bitBucketBasicAuth.dirMetadata(ownerName, repoName, "")
+    if (fileMetaJson=="Not Found") {
+      println("No files have been checked into the repository.")
+    } else {
+      try {
+        copyDir("") // TODO use future
+      } catch {
+        case ex =>
+          Console.err.println(ex.getMessage)
+          //PreconditionFailed(ex.getMessage)
+      }
+    }
 
-    /** Read file corresponding to fileName from repository into a temporary file, stream to AWS S3, then delete temporary file */
-    // TODO use stream to stream copy instead
-    def call(): Unit = {
+    /** Copies all files from BB repo to corresponding AWS S3 bucket; does not delete files from S3.
+     * @param fileName is fully qualified without a leading slash */
+    def copyOne(fileName: String, fileSize: Int): Unit = {
         try {
-            val fileSize: Int = JSON.parseFileSize(fileMetaJson, fileName)
-            val rawFileUrl: String = bitBucketBasicAuth.urlStrRaw(commit.ownerName, commit.repoName, fileName)
-            val action: String = commit.filesToActions.get(fileName)
-            // TODO ensure bucket exists
-            action match {
-              case "added" =>
-                println("Copying new file '" + fileName + "' (" + fileSize + " bytes) to bucket '" + commit.repoName + "', owned by '" + commit.ownerName + "'")
-                s3.uploadStream(commit.repoName.toLowerCase, fileName, bitBucketBasicAuth.getInputStream(rawFileUrl), fileSize)
-
-              case "modified" =>
-                println("Copying modified file '" + fileName + "' (" + fileSize + " bytes) to bucket '" + commit.repoName + "', owned by '" + commit.ownerName + "'")
-                s3.uploadStream(commit.repoName.toLowerCase, fileName, bitBucketBasicAuth.getInputStream(rawFileUrl), fileSize)
-
-              case "removed" =>
-                println("Deleting '" + fileName + "' from bucket '" + commit.repoName + "', owned by '" + commit.ownerName + "'")
-                s3.deleteObject(commit.repoName.toLowerCase, fileName)
-
-              case _ =>
-                println("BBCopy got an unexpected action '" + action + "'")
-            }
+          val rawFileUrl: String = urlStrRaw(ownerName, repoName, fileName)
+          println("  Copying file '" + fileName + "' (" + fileSize + " bytes) to bucket '" + repoName + "', owned by '" + ownerName + "'")
+          s3.uploadStream(repoName.toLowerCase, fileName, bitBucketBasicAuth.getInputStream(rawFileUrl), fileSize)
         } catch {
           case ex: Exception =>
-            println("BBCopy.call() caught an exception")
-            Console.err.println("BBCopy.call() " + (if (ex.getMessage.length==0) ex.toString else ex.getMessage))
+          println("BBCopy.call() caught an exception")
+          Console.err.println("BBCopy.call() " + (if (ex.getMessage.length==0) ex.toString else ex.getMessage))
         } finally {
           val file = new File(fileName)
           if (file.exists)
             file.delete
         }
     }
+
+    def copyDir(path: String): Unit = {
+      val url: String = urlStrRaw(ownerName, repoName, path)
+      val jsonDir: String = bitBucketBasicAuth.getUrlAsString(url)
+      val mapper = new ObjectMapper
+      var rootNode: JsonNode = mapper.readValue(jsonDir, classOf[JsonNode])
+
+      val dirs = rootNode.path("directories")
+      val files = rootNode.findValues("files")
+      if (files.length>0) files(0).foreach { fileJson =>
+        val fileName = fileJson.get("path").getTextValue
+        val fileSize = fileJson.get("size").getIntValue
+        copyOne(fileName, fileSize)
+      }
+      dirs.foreach { dirName =>
+        println("Copying " + dirName.getTextValue)
+        copyDir(dirName.getTextValue) }
+    }
+  }
 }
