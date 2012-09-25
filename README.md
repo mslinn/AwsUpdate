@@ -52,6 +52,8 @@ Also make a similar change in `$PLAY_HOME/framework/build`:
       -Dsbt.boot.properties=`dirname $0`/sbt/sbt.boot.properties \
       -jar `dirname $0`/sbt/sbt-launch.jar "$@"
 
+For Windows, make similar changes to `%PLAY_HOME%\play.bat` and `%PLAY_HOME%\framework\build.bat`.
+
 Run the Play app like this:
 
     cd AwsUpdate

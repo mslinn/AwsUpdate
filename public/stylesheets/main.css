@@ -131,9 +131,9 @@ pre {
     padding-bottom:2px;
 }
 
-.green { background-color: green; }
+.green { background-color: rgba(0, 200, 0, 0.35); }
 
-.red { background-color: red; }
+.red { background-color: rgba(200, 0, 0, 0.3); }
 
 .smallButton {
     padding: 0;
