@@ -7,27 +7,8 @@ This project is sponsored by [Micronautics Research Corporation](http://www.micr
 
 ## To Build ##
 
-This project uses code from the [AwsMirror](https://github.com/mslinn/AwsMirror/) project,
-which provides a command-line program written in Scala and Java. `AwsMirror` requires Java 7, therefore
+This project uses the [AwsS3](https://github.com/mslinn/AwsS3/) library. `AwsS3` requires Java 7, therefore
 `AwsUpdate` also requires Play 2 to run under Java 7.
-In order for Play to access the `AwsMirror` project, you need to `sbt publish-local`,
-then create a symlink from the locally published project to Play:
-
-    git clone git://github.com/mslinn/AwsMirror.git
-    cd AwsMirror
-    sbt publish-local
-    cd ..
-    git clone git://github.com/mslinn/AwsUpdate.git
-
-For Linux and Mac, create a symlink:
-
-    export PLAY_HOME ~/play-2.0.3
-    ln -s ~/.ivy2/local/com.micronautics/ $PLAY_HOME/repository/local/com.micronautics
-
-For Windows (even Cygwin) you must use [Sysinternals](http://technet.microsoft.com/en-us/sysinternals/bb842062) `junction` command:
-
-    setx PLAY_HOME "C:\play-2.0.3"
-    junction "%PLAY_HOME%/repository/local/com.micronautics" "%HOMEDRIVE%%HOMEPATH%/.ivy2/local/com.micronautics"
 
 For all OSes, you need to define a Java system property before you can run `AwsUpdate` locally.
 Edit the last line of your script that runs Play so that a new system property called `com.amazonaws.sdk.disableCertChecking` is defined.
@@ -152,4 +133,3 @@ This bash script makes a test commit for your convenience:
     # poke: a script for testing AwsUpdate post-receive hooks
     cd $aws/awsupdatetest
     date>test.html; git add -A .; git commit -m "testing"; git push
-
