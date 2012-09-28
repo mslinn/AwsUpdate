@@ -52,14 +52,16 @@ A custom `Procfile` is provided in the application root that defines the Java sy
     git clone git@github.com:mslinn/AwsUpdate.git
     git remote add heroku git@heroku.com:floating-meadow-2509.git # use your Heroku app name here
 
+You are encouraged to copy `conf/sample.AwsCredentials.properties` to `conf/AwsCredentials.properties`, and edit that file to reflect your AWS credentials.
 Define two environment variables to hold your AWS access key and your AWS secret key:
 
-    source AwsCredentials.properties
+    source conf/AwsCredentials.properties
     heroku config:add accessKey=$accessKey secretKey=$secretKey
 
-If you want to access a private repository on BitBucket, define two more environment variables to hold basic authentication credentials:
+If you want to access a private repository on BitBucket, define two more environment variables to hold basic authentication credentials.
+`conf/sample.BBCredentials.properties` should be copied to `conf/BBCredentials.properties` and edited to include your BitBucket credentials.
 
-    source BBCredentials.properties
+    source conf/BBCredentials.properties
     heroku config:add bbUserId=$userid bbPassword=$password
 
 Check that the environment variables are properly set:
