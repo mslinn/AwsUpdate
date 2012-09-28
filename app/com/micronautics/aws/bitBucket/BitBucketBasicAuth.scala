@@ -103,8 +103,8 @@ object BitBucketBasicAuth {
 class BitBucketBasicAuth(val s3: S3) {
   /**@see https://github.com/fernandezpablo85/scribe-java/wiki/getting-started */
   var exception: Exception = null
-  var userid: String = System.getenv("userid")
-  var password: String = System.getenv("password")
+  var userid: String = System.getenv("bbUserId")
+  var password: String = System.getenv("bbPassword")
   var inputStream: InputStream = null
 
   try {
