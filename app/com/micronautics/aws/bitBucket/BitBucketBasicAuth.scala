@@ -160,7 +160,7 @@ class BitBucketBasicAuth(val s3: S3) {
 //      if (contents.contains("<title>Someone kicked over the bucket, sadface &mdash; Bitbucket</title>")) {
 //        getUrlAsString(theUrl)
 //      } else
-    contents
+    if (null==contents) "" else contents
   }
 
   /** Return the contents of the file at urlStr as an inputStream */
@@ -176,7 +176,10 @@ class BitBucketBasicAuth(val s3: S3) {
   /** Return the contents of the file at urlStr as a String */
   def getUrlAsString(urlStr: String): String = IOUtils.toString(getInputStream(urlStr))
 
-  def repoExists(repoName: String): Boolean = dirMetadata(userid, repoName, "") != "Not Found"
+  def repoExists(repoName: String): Boolean = {
+    val metadata = dirMetadata(userid, repoName, "")
+    null != metadata && metadata != "Not Found"
+  }
 
   def repositoryObjects(ownerName: String): List[BBRepository] = {
     val jsonStr: String = getUrlAsString(urlRepositories(ownerName))
