@@ -45,7 +45,7 @@ To debug locally:
     play debug run
 
 To debug on Heroku, [read this](http://mikeslinn.blogspot.com/2012/09/debugging-jvm-programs-on-heroku.html).
-	
+
 ## To Run ##
 A custom `Procfile` is provided in the application root that defines the Java system variable
 `com.amazonaws.sdk.disableCertChecking`, which configures the HttpClient SSL factory so the AWS SSL certificate is accepted.
@@ -86,22 +86,26 @@ The [web app](http://floating-meadow-2509.herokuapp.com/) should now be up and r
 ## Git Post-Receive Service Hooks ##
 
 A Play route is dedicated to receiving updates from each remote git service (GitHub or BitBucket).
-The associated controller will perform the following when complete:
+The associated controller performs the following:
 
- 1. Accept a POST in JSON format from the remote git service describing the commit.
- 2. Verify the POST to be a result of a valid commit.
- 3. Read each of the committed files and store into a temporary directory.
- 4. Push content files to AWS S3.
+ 1. Accepts a POST in JSON format from the remote git service describing the commit.
+ 2. Verifies the POST to be a result of a valid commit.
+ 3. Reads each of the committed files and store into a temporary directory.
+ 4. Pushes new or modified content files to AWS S3, or deleted files if required.
 
-I had written a streaming copy utility from the Git repository to AWS S3 using NIO, but later discovered that AWS S3
-needs to know the file size prior to initiating a transfer.
-The only way I could discover the file size was to store each file locally :(
-Let's hope the temporary disk space accessible from Heroku is big enough. 2GB per file would be ideal.
-Not sure how many threads are available to the Heroku instance; I want to allocate as many threads as possible and
-transfer files in parallel.
+## To Configure Repositories ##
+A post-receive hook must be installed on each repository that you wish to be serviced by `AwsUpdate`.
+For BitBucket:
+
+  1. Select the __Admin__ menu item from the repository page on `BitBucket.org`.
+  1. Click on the __Services__ side menu.
+  1. From the __Select a Service...__ pull-down menu, select __POST__ and click __Add service__.
+  1. Enter the URL of your instance of `AwsUpdate` on Heroku. For example:
+     ````http://cheeky-monkey-666.herokuapp.com/bb/accept````
+  1. Click on __Save settings__.
 
 ### GitHub WebHook URLs Hook ###
-The Play 2 controller has not yet been written.
+The Play 2 controller for GitHub has not yet been written.
 
 The GitHub WebHook URLs(0) service is what we need.
 Go to Admin / Service Hooks and pick the first entry, then enter the URL to POST to.
