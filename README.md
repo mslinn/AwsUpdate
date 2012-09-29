@@ -40,10 +40,12 @@ Run the Play app like this:
     cd AwsUpdate
     play
 
-To debug:
+To debug locally:
 
     play debug run
 
+To debug on Heroku, [read this](http://mikeslinn.blogspot.com/2012/09/debugging-jvm-programs-on-heroku.html).
+	
 ## To Run ##
 A custom `Procfile` is provided in the application root that defines the Java system variable
 `com.amazonaws.sdk.disableCertChecking`, which configures the HttpClient SSL factory so the AWS SSL certificate is accepted.
