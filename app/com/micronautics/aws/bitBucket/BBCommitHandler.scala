@@ -53,11 +53,11 @@ class BBCommitHandler(val commit: Commit, val fileName: String) extends Callable
             // TODO ensure bucket exists
             action match {
               case "added" =>
-                println("Copying new file '" + fileName + "' (" + fileSize + " bytes) to bucket '" + commit.repoName + "', owned by '" + commit.ownerName + "'")
+                println("Copying new file '" + fileName + "' (" + fileSize + " bytes) at " + rawFileUrl + " to bucket '" + commit.repoName + "', owned by '" + commit.ownerName + "'")
                 s3.uploadStream(commit.repoName.toLowerCase, fileName, bitBucketBasicAuth.getInputStream(rawFileUrl), fileSize)
 
               case "modified" =>
-                println("Copying modified file '" + fileName + "' (" + fileSize + " bytes) to bucket '" + commit.repoName + "', owned by '" + commit.ownerName + "'")
+                println("Copying modified file '" + fileName + "' (" + fileSize + " bytes) at " + rawFileUrl + " to bucket '" + commit.repoName + "', owned by '" + commit.ownerName + "'")
                 s3.uploadStream(commit.repoName.toLowerCase, fileName, bitBucketBasicAuth.getInputStream(rawFileUrl), fileSize)
 
               case "removed" =>

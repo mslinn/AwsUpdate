@@ -2,7 +2,6 @@ package controllers
 
 import play.api._
 import mvc._
-import java.io.File
 import com.micronautics.aws.bitBucket.BBCommitHandler
 import com.micronautics.aws.S3File
 import scala.collection.mutable

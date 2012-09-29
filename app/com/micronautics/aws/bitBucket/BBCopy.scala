@@ -33,7 +33,7 @@ object BBCopy {
      * @param fileName is fully qualified without a leading slash */
     def copyOne(fileName: String, fileSize: Int): Unit = {
         try {
-          val rawFileUrl: String = urlStrRaw(ownerName, repoName, fileName)
+          val rawFileUrl: String = urlStrNode(ownerName, repoName, fileName)
           println("  Copying file '" + fileName + "' (" + fileSize + " bytes) to bucket '" + repoName + "', owned by '" + ownerName + "'")
           s3.uploadStream(repoName.toLowerCase, fileName, bitBucketBasicAuth.getInputStream(rawFileUrl), fileSize)
         } catch {
@@ -48,7 +48,7 @@ object BBCopy {
     }
 
     def copyDir(path: String): Unit = {
-      val url: String = urlStrRaw(ownerName, repoName, path)
+      val url: String = urlStrNode(ownerName, repoName, path)
       val jsonDir: String = bitBucketBasicAuth.getUrlAsString(url)
       val mapper = new ObjectMapper
       var rootNode: JsonNode = mapper.readValue(jsonDir, classOf[JsonNode])

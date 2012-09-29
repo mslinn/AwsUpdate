@@ -46,8 +46,11 @@ object BitBucketBasicAuth {
             } ...
         ]
     }</pre> */
-  def urlStrRaw(ownerName: String, repoName: String, path: String): String =
+  def urlStrNode(ownerName: String, repoName: String, path: String): String =
     "https://api.bitbucket.org/1.0/repositories/" + ownerName.toLowerCase + "/" + repoName.toLowerCase + "/src/master/" + path
+
+  def urlStrRaw(ownerName: String, repoName: String, path: String): String =
+    "https://bitbucket.org/" + ownerName.toLowerCase + "/" + repoName.toLowerCase + "/raw/master/empty.html"
 
   /** Return URL that can fetch metadata about fileName
     * @see https://confluence.atlassian.com/display/BITBUCKET/Using+the+bitbucket+REST+APIs */
@@ -143,7 +146,7 @@ class BitBucketBasicAuth(val s3: S3) {
       val urlStrIn: String = urlStrSrc(ownerName, repoName, fileName)
       val payload = getUrlAsString(urlStrIn)
       val filesize = JSON.parseFileSize(payload, urlStrIn)
-      val urlRawIn = urlStrRaw(ownerName, repoName, fileName)
+      val urlRawIn = urlStrNode(ownerName, repoName, fileName)
       s3.uploadStream(bucketName, key, getInputStream(urlRawIn), filesize)
   }
 
@@ -160,7 +163,7 @@ class BitBucketBasicAuth(val s3: S3) {
 //      if (contents.contains("<title>Someone kicked over the bucket, sadface &mdash; Bitbucket</title>")) {
 //        getUrlAsString(theUrl)
 //      } else
-    if (null==contents) "" else contents
+    if (null==contents) "Not Found" else contents
   }
 
   /** Return the contents of the file at urlStr as an inputStream */
