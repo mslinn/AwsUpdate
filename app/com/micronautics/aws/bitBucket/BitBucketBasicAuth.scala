@@ -50,7 +50,7 @@ object BitBucketBasicAuth {
     "https://api.bitbucket.org/1.0/repositories/" + ownerName.toLowerCase + "/" + repoName.toLowerCase + "/src/master/" + path
 
   def urlStrRaw(ownerName: String, repoName: String, path: String): String =
-    "https://bitbucket.org/" + ownerName.toLowerCase + "/" + repoName.toLowerCase + "/raw/master/empty.html"
+    "https://bitbucket.org/" + ownerName.toLowerCase + "/" + repoName.toLowerCase + "/raw/master/" + path
 
   /** Return URL that can fetch metadata about fileName
     * @see https://confluence.atlassian.com/display/BITBUCKET/Using+the+bitbucket+REST+APIs */
