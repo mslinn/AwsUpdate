@@ -1,6 +1,6 @@
 # AwsUpdate #
 
-Responds to a git post-receive hook installed in BitBucket or GitHub to notify a Heroku app that files were changed,
+Responds to a git post-receive hook installed in BitBucket to notify a Heroku app that files were changed,
 and then updates an S3 bucket with the modified files. `AwsUpdate` runs under Play 2 and requires Java 7.
 
 This project is sponsored by [Micronautics Research Corporation](http://www.micronauticsresearch.com/)
@@ -86,7 +86,7 @@ Open it in your browser with:
 
 ## Git Post-Receive Service Hooks ##
 
-A Play route is dedicated to receiving updates from each remote git service (GitHub or BitBucket).
+A Play route is dedicated to receiving updates from each remote git service.
 The associated controller performs the following:
 
  1. Accepts a POST in JSON format from the remote git service describing the commit.
@@ -106,9 +106,16 @@ For BitBucket:
   1. Click on __Save settings__.
 
 ## Developer Information ##
-### GitHub WebHook URLs Hook ###
-The Play 2 controller for GitHub has not yet been written.
 
+### BitBucket POST Service ###
+The `acceptBB` Play 2 controller is the post-receive handler.
+
+Each time files are pushed to BitBucket, a POST can originate from the repo and can go a designated URL.
+For the details on the services included with Bitbucket, check out [BitBucket services](https://confluence.atlassian.com/display/BITBUCKET/Managing+bitbucket+Services).
+This Heroku app works with the [POST service](https://confluence.atlassian.com/display/BITBUCKET/Setting+Up+the+bitbucket+POST+Service).
+
+### GitHub WebHook URLs Hook ###
+A Play 2 controller for GitHub has not yet been written.
 The GitHub WebHook URLs(0) service is what we need.
 Go to Admin / Service Hooks and pick the first entry, then enter the URL to POST to.
 
@@ -120,15 +127,6 @@ The Public IP addresses for these hooks are: 207.97.227.253, 50.57.128.197, 108.
 FYI, GitHub's [service hooks](https://github.com/mslinn/HerokuTomcatAwsS3/admin/hooks) are open source, written in Ruby.
 They include user-written hooks into the public list.
 Docs are [here](https://github.com/github/github-services).
-
-### BitBucket POST Service ###
-The `acceptBB` Play 2 controller is the post-receive handler.
-
-Each time files are pushed to BitBucket, a POST can originate from the repo and can go a designated URL.
-For the details on the services included with Bitbucket, check out [BitBucket services](https://confluence.atlassian.com/display/BITBUCKET/Managing+bitbucket+Services).
-This Heroku app works with the [POST service](https://confluence.atlassian.com/display/BITBUCKET/Setting+Up+the+bitbucket+POST+Service).
-Basic authentication doesn't work for some of direct file routes; an internal ticket has been opened.
-BitBucket's OAuth does not yet support authenticating against private git repositories.
 
 ### Testing ###
 Forward a port to your dev machine, and define a test repo such as [awsupdatetest](https://bitbucket.org/mslinn/awsupdatetest).
