@@ -45,6 +45,7 @@ To debug locally:
     play debug run
 
 To debug on Heroku, [read this](http://mikeslinn.blogspot.com/2012/09/debugging-jvm-programs-on-heroku.html).
+The `enableHerokuDebugging` and `disableHerokuDebugging` scripts are helpful.
 
 ## To Run ##
 A custom `Procfile` is provided in the application root that defines the Java system variable
@@ -131,7 +132,7 @@ Docs are [here](https://github.com/github/github-services).
 ### Testing ###
 Forward a port to your dev machine, and define a test repo such as [awsupdatetest](https://bitbucket.org/mslinn/awsupdatetest).
 In your test repo, define a POST service that points to this Play app, running on your dev machine.
-For example: http://maya42.no-ip.info:9000/bb/accept
+For example: http://blah.no-ip.info:9000/bb/accept
 You can define multiple POST services, so that several machines can debug at the same time.
 
 This bash script makes a test commit for your convenience:
