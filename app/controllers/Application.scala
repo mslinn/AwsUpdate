@@ -8,11 +8,12 @@ import scala.collection.mutable
 import scala.collection.JavaConversions._
 import scala.Some
 import model.Model
+import play.api.mvc.Security
 
 object Application extends Controller {
   val s3Files = mutable.Map.empty[String, S3File]
 
-  def index = Action {
+  def index = Security.Authenticated {
     val x = Model.s3.s3.getBucketWebsiteConfiguration("www.slinnbooks.com")
     val y = Model.s3.isWebsiteEnabled("blah")
     Ok(views.html.index("AwsUpdate is ready."))

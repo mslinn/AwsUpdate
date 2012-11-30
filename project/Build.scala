@@ -7,9 +7,9 @@ object ApplicationBuild extends Build {
     val appVersion = "0.1.0-SNAPSHOT"
 
     val appDependencies = Seq(
-      "com.micronautics" %  "awss3"       % "0.1.0-SNAPSHOT" withSources(),
-      "com.codahale"     %% "jerkson"     % "0.5.0",
-      "org.scalaj"       %% "scalaj-time" % "0.6" withSources()
+      "com.micronautics" % "awss3"             % "0.1.0-SNAPSHOT" withSources(),
+      "com.codahale"     % "jerkson_2.9.1"     % "0.5.0",
+      "org.scalaj"       % "scalaj-time_2.9.1" % "0.6" withSources()
     )
 
     val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(
